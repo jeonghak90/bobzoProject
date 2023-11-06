@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Report</title>
+</head>
+<body>
+<h1>Create Report</h1>
+<form th:action="@{/help/report/create}" th:object="${report}" method="post">
+    <label for="title">Title:</label>
+    <input type="text" id="title" th:field="*{title}" required="required"/>
+
+    <label for="content">Content:</label>
+    <input type="text" id="content" th:field="*{content}" required="required"/>
+    <button type="submit">Create</button>
+</form>
+<a href="report">Back to list</a>
+</body>
+</html>

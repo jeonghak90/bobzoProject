@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Report</title>
+</head>
+<body>
+<h1>View Report</h1>
+<p>ID: <span th:text="${report.num}"></span></p>
+<p>Content: <span th:text="${report.content}"></span></p>
+<p>Status: <span th:text="${report.reportStatus}"></span></p>
+<a href="/report">Back to list</a>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+</head>
+<body>
+<h2>/recipe/write</h2>
+<hr>
+
+<form method="post" action="/recipe/updateRecipe" th:object="${recipeDTO}">
+    <input type="text" name="title" placeholder="제목" th:field="*{title}">
+    <textarea name="content" placeholder="내용" th:field="*{content}"></textarea>
+
+    <label>카테고리:</label>
+    <input type="radio" name="categories" value="KoreanFood" th:field="*{categories}"> KoreanFood
+    <input type="radio" name="categories" value="ChineseFood" th:field="*{categories}"> ChineseFood
+    <input type="radio" name="categories" value="JapanFood" th:field="*{categories}"> JapanFood
+    <input type="radio" name="categories" value="WesternFood" th:field="*{categories}"> WesternFood
+
+    <button type="submit">글 작성</button>
+</form>
+
+    <form action="/recipe/page/1" method="get">
+        <button type="submit">취소</button>
+    </form>
+
+</div>
+
+</body>
+</html>

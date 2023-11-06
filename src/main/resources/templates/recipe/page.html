@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+
+    <style>
+        body {
+            background-color: #4CAF50; /* 초록색 계열의 배경색 */
+            color: #fff; /* 텍스트 색상을 흰색으로 설정 */
+            font-family: Arial, sans-serif;
+        }
+        h2 {
+            color: white;
+            background-color: green;
+            padding: 10px;
+        }
+        h1 {
+            color: green;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+        table, th, td {
+            border: 1px solid green;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: green;
+            color: white;
+        }
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            text-decoration: none;
+            margin: 20px;
+        }
+        a:hover {
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+<h2>/recipe/page</h2>
+<hr>
+
+<h1>게시판 목록 보기</h1>
+
+
+
+
+<table border="1">
+
+    <tr>
+        <th>글 번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성 날짜</th>
+        <th>수정 날짜</th>
+        <th>카테 고리</th>
+        <th>조횟수</th>
+    </tr>
+
+    <tr th:each="recipe : ${recipes}">
+        <td th:text="${recipe.num}"></td>
+        <td>
+            <a th:href="@{'/recipe/readRecipe/' + ${recipe.num}}">
+                <span th:text="${recipe.title}"></span>
+            </a>
+        </td>
+        <td th:text="${recipe.fkUsers.nickName}"></td>
+        <td th:text="${#dates.format(recipe.createDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="${#dates.format(recipe.processedDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:if="${recipe.fkCategories != null}" th:text="${recipe.fkCategories.name}"></td>
+        <td th:text="${recipe.cnt}"></td>
+    </tr>
+
+</table>
+
+
+<div th:if="${recipes.totalPages > 1}" class="pagination">
+    <span th:if="${recipes.number > 0}">
+        <a th:href="@{'/recipe/page/' + ${recipes.number}}">이전</a>
+    </span>
+    <span th:each="pageNum : ${#numbers.sequence(0, recipes.totalPages - 1)}">
+        <a th:href="@{'/recipe/page/' + ${pageNum + 1}}" th:text="${pageNum + 1}"
+           th:class="${recipes.number + 1 == pageNum} ? 'active' : ''"></a>
+    </span>
+    <span th:if="${recipes.number < recipes.totalPages - 1}">
+        <a th:href="@{'/recipe/page/' + ${recipes.number + 2}}">다음</a>
+    </span>
+</div>
+
+
+
+
+<a href="/recipe/write">글쓰기</a>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Report List</title>
+</head>
+<body>
+<h1>Report List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Content</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="report : ${reports}">
+        <td th:text="${report.num}"></td>
+        <td th:text="${report.content}"></td>
+        <td th:text="${report.reportStatus}"></td>
+        <td>
+            <!-- 경로 수정 -->
+            <a th:href="@{/help/report/{id}(id=${report.num})}">View</a> |
+            <a th:href="@{/help/report/{id}/edit(id=${report.num})}">Edit</a> |
+            <a th:href="@{/help/report/{id}/delete(id=${report.num})}">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<!-- 경로 수정 -->
+<a href="/help/report/create">Create Report</a>
+</body>
+</html>

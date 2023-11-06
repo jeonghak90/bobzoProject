@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+</head>
+<body>
+<div class="signup-container">
+    <h2>회원가입</h2>
+
+    <form th:action="@{/users/register}" method="post">
+        <div class="form-group">
+            <label for="id">User ID:</label>
+            <input type="text" id="id" name="userId" onkeydown="inputCheckAfter(this)" placeholder="User ID" required>
+            <button type="button" onclick="checkDuplicate(this)">ID 중복확인</button>
+            <div class="result-class"> <!-- 서버에서 가져온 값이 여기에 표시됨. --> </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password 확인:</label>
+            <input type="password" id="pswdCheck" placeholder="Password 재입력" onkeyup="checkPasswordMatch()" required>
+            <div id="passwordMatchMessage"></div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" onkeydown="inputCheckAfter(this)" placeholder="Email" required>
+            <button type="button" onclick="checkDuplicate(this)">E-Mail 중복확인</button>
+            <div class="result-class"> <!-- 서버에서 가져온 값이 여기에 표시됨. --> </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="birthdate">생년월일:</label>
+            <input type="date" id="birthdate" name="birthdate" placeholder="생년월일" required>
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="nickName">Nickname:</label>
+            <input type="text" id="nickName" name="nickName"  onkeydown="inputCheckAfter(this)" placeholder="Nickname" required>
+            <button type="button" onclick="checkDuplicate(this)">Nickname 중복확인</button>
+            <div class="result-class"> <!-- 서버에서 가져온 값이 여기에 표시될 것입니다. --> </div>
+        </div>
+        <br>
+        <button type="submit" id="submitBtn" disabled>회원가입</button>
+    </form>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    // ============================= 회원가입 중복 기능 ============================= //
+
+    function checkDuplicate(target) {
+        // onclick 이벤트 발생 시 해당 버튼(this)의 부모 요소인 .form-group을 찾음
+        const formTag = $(target).closest('.form-group');
+
+        // 그 다음 .form-group 내에서 input 태그를 찾음
+        const inputTag = formTag.find('input');
+
+        // input 태그의 값 가져오기
+        const inputValue = inputTag.val();
+
+        // 버튼 작동 시 어떤 중복확인인지 Input 태그의 'id' 이름(문자열)을 가져오기
+        const inputId = inputTag.attr('id');
+
+        $.ajax({
+            url: '/users/checkDuplicate',
+            method: 'POST',
+            dataType: 'json',
+            data: { infoValue: inputValue, key: inputId },
+            success: function(result) {
+                displayData(result, formTag, inputId);
+
+                if(result) {
+                    btnDeactive(target);
+                } else {
+                    btnActive(target);
+                }
+
+                updateBtnState()
+            },
+            error: function(error) {
+                console.error('데이터를 가져오는 중 에러 발생:', error);
+            }
+        });
+    }
+
+    function displayData(result, inputFormTag, inputId) {
+        // 클래스명form-group이라는 formTag 내에서 result-class를 찾음
+        const resultContainer = inputFormTag.find('.result-class');
+
+        // 어떤 중복확인인지 id값을 inputId 문자열로 받아서 대문자처리
+        const upperDynamicId = inputId.toUpperCase();
+
+        // 문자열 템플릿은 백틱(`)으로 감싸져 있다.
+        if(result) {
+            resultContainer.html(
+                `<span style="font-size: 15px; color: #01DF01;">사용 할 수 있는 ${upperDynamicId} 입니다.</span>`
+            );
+        } else {
+            resultContainer.html(
+                `<span style="font-size: 15px; color: red;">중복된 ${upperDynamicId} 입니다.</span>`
+            );
+        }
+    }
+
+    function displayReset(inputElement) {
+
+        const formTag = $(inputElement).closest('.form-group');
+
+        // 클래스명form-group이라는 formTag 내에서 result-class를 찾음
+        const resultContainer = formTag.find('.result-class');
+
+        resultContainer.empty();
+    }
+
+    function btnDeactive(targetBtn) {
+        targetBtn.disabled = true;
+        targetBtn.style.opacity=0.4;
+        targetBtn.style.cursor="default";
+    }
+
+    function btnActive(targetBtn) {
+        targetBtn.disabled = false;
+        targetBtn.style.opacity = 1;
+        targetBtn.style.cursor = "pointer";
+    }
+
+    function updateBtnState() {
+        // 각 버튼의 상태를 확인
+        const idButton = document.querySelector('#id + button');
+        console.log("ID 중복확인버튼 비활성화 여부:", idButton.disabled);
+        const emailButton = document.querySelector('#email + button');
+        console.log("이메일 중복확인버튼 비활성화 여부:", emailButton.disabled);
+        const nickNameButton = document.querySelector('#nickName + button');
+        console.log("닉넴 중복확인버튼 비활성화 여부:", nickNameButton.disabled);
+
+        // 회원가입 버튼
+        const registBtn = document.getElementById('submitBtn');
+
+        const allTrue = idButton.disabled && emailButton.disabled && nickNameButton.disabled;
+
+        if(allTrue) {
+            btnActive(registBtn);
+        } else {
+            btnDeactive(registBtn);
+        }
+    }
+
+    function inputCheckAfter(inputElement) {
+        const formTag = inputElement.closest('.form-group');
+        const targetBtn = formTag.querySelector('button');
+
+        displayReset(inputElement);
+        btnActive(targetBtn);
+        updateBtnState();
+    }
+    // ============================================================================== //
+
+
+    // ============================= 비밀번호 체크 기능 ============================= //
+
+    function checkPasswordMatch() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("pswdCheck").value;
+        var matchMessage = document.getElementById("passwordMatchMessage");
+
+        if (password === confirmPassword) {
+            matchMessage.innerHTML = "비밀번호 일치";
+            matchMessage.style.color = "#01DF01";
+        } else {
+            matchMessage.innerHTML = "비밀번호 불일치";
+            matchMessage.style.color = "red";
+        }
+    }
+    // ============================================================================== //
+</script>
+</body>
+</html>
